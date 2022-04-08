@@ -19,6 +19,7 @@
     "webpack-dev-server": "^4.8.1"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "socket.io-client": "^4.4.1"
   }
 }

@@ -13,15 +13,20 @@ class Entity {
 
     position: PositionPoint
     rotation: RotationPoint
+    
+    id: string
+    nickname: string
 
-    constructor(x: number, y: number, z: number, yaw=0, pitch=0, roll=0) {
+    constructor(x: number, y: number, z: number, yaw=0, pitch=0, roll=0, id="-1") {
         this.position = new PositionPoint(x, y, z)
         this.rotation = new RotationPoint(yaw, pitch, roll)
         this.updateAxis()
+        this.id = id
+        this.nickname = `Entity ${id}`
     }
 
     update() {
-        this.updateAxis()
+        // this.updateAxis()
     }
 
     updateAxis() {
@@ -37,6 +42,13 @@ class Entity {
         this.axis_X.draw(camera)
         this.axis_Y.draw(camera)
         this.axis_Z.draw(camera)
+    }
+
+    drawName(camera: Camera) {
+        const [embedding, scale] = camera.mapPoint(this.position)
+        if (embedding) {
+            camera.canvas.text(embedding.getValue(0, 0), embedding.getValue(1, 0), this.nickname, 2 * (scale as number))
+        }
     }
 
     toString() {

@@ -12,7 +12,7 @@ class Camera {
     M!: Matrix
     canvas: Canvas
     near=1
-    far=100
+    far=200
     f=256
     p_x: number
     p_y: number
@@ -88,13 +88,14 @@ class Camera {
         this.updateM()
     }
 
-    mapPoint(point: Point) {
+    mapPoint(point: Point): [embedding: Matrix | null, scale: number | null] {
         const embedding =  this.M.multiply(point)
         if (embedding.getValue(2, 0) < this.far && embedding.getValue(2, 0) > this.near) {
+            const scale = this.f / embedding.getValue(2, 0)
             embedding.multiplyCol(0, 1 / embedding.getValue(2, 0))
-            return embedding
+            return [embedding, scale]
         }
-        return null
+        return [null, null]
     }
 
     toString() {

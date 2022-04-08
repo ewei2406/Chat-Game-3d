@@ -21,9 +21,9 @@ class Point extends ColumnVector {
     }
 
     draw(camera: Camera) {
-        const embedding = camera.mapPoint(this)
+        const [embedding, scale] = camera.mapPoint(this)
         if (embedding) {
-            camera.canvas.point(embedding.getValue(0, 0), embedding.getValue(1, 0))
+            camera.canvas.point(embedding.getValue(0, 0), embedding.getValue(1, 0), 0.5 * (scale as number))
         }
     }
 
@@ -34,6 +34,11 @@ class Point extends ColumnVector {
 
     clone() {
         return new Point(this.getValue(0), this.getValue(1), this.getValue(2))
+    }
+
+    squeeze(): number[] {
+        const A = [this.getValue(0), this.getValue(1), this.getValue(2)]
+        return A
     }
 }
 

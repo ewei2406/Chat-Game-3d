@@ -22,9 +22,9 @@ class Canvas {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
 
-    point(x: number, y: number, color="black") {
+    point(x: number, y: number, size=2, color="black") {
         this.ctx.fillStyle = color;
-        this.ctx.fillRect(x - 2, y - 2, 4, 4)
+        this.ctx.fillRect(x - size/2, y - size/2, size, size)
     }
 
     line(x0: number, y0: number, x1: number, y1: number, color="green") {
@@ -33,6 +33,13 @@ class Canvas {
         this.ctx.moveTo(x0, y0)
         this.ctx.lineTo(x1, y1)
         this.ctx.stroke()
+    }
+
+    text(x0: number, y0: number, text: string, size=10, color="black") {
+        this.ctx.fillStyle = color
+        this.ctx.font = `${size}px Arial`
+        const size_t = this.ctx.measureText(text)
+        this.ctx.fillText(text, x0 - size_t.width / 2, y0)
     }
 }
 

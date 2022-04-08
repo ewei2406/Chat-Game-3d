@@ -15,8 +15,8 @@ class Edge {
     }
 
     draw(camera: Camera) {
-        const startEmbedding = camera.mapPoint(this.start)
-        const stopEmbedding = camera.mapPoint(this.stop)
+        const [startEmbedding, startScale] = camera.mapPoint(this.start)
+        const [stopEmbedding, stopScale] = camera.mapPoint(this.stop)
 
         if (startEmbedding && stopEmbedding) {
             camera.canvas.line(
