@@ -4,9 +4,9 @@
 
 Why chat in 2d when you can chat in 3d?
 
-<h1 align="center">
+<div align="center">
     <a href="https://chat-game-3d.herokuapp.com/"><img src="./assets/OpenApp.png" alt="Open App" width="150"></a>
-</h1>
+</div>
 
 # Features
 
@@ -14,9 +14,9 @@ Why chat in 2d when you can chat in 3d?
 - Lovely 3d environment (with flowers, trees, clouds, and more!)
 - Adjustable camera settings
 
-<img src="./assets/Demo1.png" width="300">
-<img src="./assets/Demo2.png" width="300">
-<img src="./assets/Demo3.png" width="300">
+<img src="./assets/Demo1.png" width="600">
+<img src="./assets/Demo2.png" width="600">
+<img src="./assets/Demo3.png" width="600">
 
 # About
 I created this project with inspiration from my linear algebra class. It started as a small rendering engine I created from scratch while learning about camera transformation matricies. Later, a friend told me that I should make something more interesting than just a rendering engine, so I decided to explore websockets.
