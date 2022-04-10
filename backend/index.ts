@@ -60,6 +60,10 @@ app.get('/generateId', (req: any, res: any ) => {
     res.json(newId)
 })
 
+app.get('/favicon', (req: any, res: any) => {
+    res.send('./favicon.ico')
+})
+
 const PORT = process.env.PORT || 3001
 
 

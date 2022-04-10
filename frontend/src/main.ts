@@ -110,11 +110,11 @@ const connection = new Connection(() => {
     // Handle other players
     let otherPlayers: { [id: string]: Player } = {};
     connection.onRecievePlayerData(pd => {
-        let self = pd.find(playerData => playerData.id === connection.id)
-        if (!self) {
-            window.confirm("You have been disconnected for inactivity.")
-            window.location.reload();
-        }
+        // let self = pd.find(playerData => playerData.id === connection.id)
+        // if (!self) {
+        //     window.confirm("You have been disconnected for inactivity.")
+        //     window.location.reload();
+        // }
         pd = pd.filter(playerData => playerData.id !== connection.id)
 
         for (const p in otherPlayers) {
