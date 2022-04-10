@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<link rel="stylesheet" href="style.css">
+
+<head>
+    <title>Graphics</title>
+<script defer src="bundle.js"></script></head>
+
+<body>
+
+    <div>
+        <h1>Playing Chat Game</h1>
+        Set nickname: <input type="text" id="nickname">
+    </div>
+<br>
+    <div style="display: flex;">
+        <canvas id="display" tabindex="0" style="
+            border: 1px solid black;
+            background-color: rgb(163, 223, 241);
+        ">Enable JavaScript</canvas>
+        <div style="
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            border: 1px solid black;
+        ">
+            <div id="chatBox" style="
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                width: 400px; 
+                height: 100%; 
+                overflow: scroll;
+            "></div>
+            <input type="text" style="width: 400px; box-sizing: border-box;" placeholder="Send a message..." id="sendMessage">
+        </div>
+    </div>
+    <br>
+    <div>
+        Set FOV: <input type="range" id="FOVSlider" value="256" min="1" max="512"><br>
+        Set render distance: <input type="range" id="renderSlider" value="300" min="1" max="600"><br>
+        <button id="reset">Reset</button>
+    </div>
+
+    <div id="info"></div>
+</body>
