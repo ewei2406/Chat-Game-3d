@@ -11,8 +11,8 @@ class Camera {
 
     M!: Matrix
     canvas: Canvas
-    near=1
-    far=200
+    near=0.1
+    far=300
     f=256
     p_x: number
     p_y: number

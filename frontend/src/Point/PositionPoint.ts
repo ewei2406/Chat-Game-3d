@@ -20,15 +20,15 @@ class PositionPoint extends Point {
     }
 
     setX(x: number) {
-        this.setValue(0, x)
+        return this.setValue(0, x)
     }
 
     setY(y: number) {
-        this.setValue(1, y)
+        return this.setValue(1, y)
     }
 
     setZ(z: number) {
-        this.setValue(2, z)
+       return this.setValue(2, z)
     }
 
     getTranslateMatrix(factor=-1) {

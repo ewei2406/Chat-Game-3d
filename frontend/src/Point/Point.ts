@@ -4,8 +4,12 @@ import TransformMatrix from "../Matrix/TransformMatrix";
 import ColumnVector from "../Vector/ColumnVector";
 
 class Point extends ColumnVector {
-    constructor(x: number, y: number, z: number, norm=1) {
+    color: string
+    size: number
+    constructor(x: number, y: number, z: number, norm=1, color="black", size=0.5) {
         super([x, y, z, norm])
+        this.color = color
+        this.size = size
     }
 
     getValue(r: number): number {
@@ -23,7 +27,7 @@ class Point extends ColumnVector {
     draw(camera: Camera) {
         const [embedding, scale] = camera.mapPoint(this)
         if (embedding) {
-            camera.canvas.point(embedding.getValue(0, 0), embedding.getValue(1, 0), 0.5 * (scale as number))
+            camera.canvas.point(embedding.getValue(0, 0), embedding.getValue(1, 0), this.size * (scale as number), this.color)
         }
     }
 

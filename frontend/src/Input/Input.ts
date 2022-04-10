@@ -36,8 +36,10 @@ class Input {
     }
 
     handleMouseMove(e: MouseEvent) {
-        this.MOUSE_X_FRAME += e.movementX
-        this.MOUSE_Y_FRAME += e.movementY
+        if (this.canvas === document.pointerLockElement) {
+            this.MOUSE_X_FRAME += e.movementX
+            this.MOUSE_Y_FRAME += e.movementY
+        }
     }
 
     update() {

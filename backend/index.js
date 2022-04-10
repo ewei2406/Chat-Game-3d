@@ -19,6 +19,10 @@ io.on('connection', (socket) => {
         console.log(msg);
         currentPlayers[msg.id] = Object.assign(Object.assign({}, msg), { timestamp: Date.now() });
     });
+    socket.on('messageUp', (msg) => {
+        console.log(msg);
+        io.emit('messageDown', Object.assign(Object.assign({}, msg), { timestamp: new Date().toLocaleTimeString() }));
+    });
 });
 setInterval(() => {
     io.emit('playerDataDown', Object.values(currentPlayers));

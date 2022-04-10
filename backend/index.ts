@@ -24,12 +24,26 @@ type PlayerData = {
 }
 const currentPlayers: { [id: string]: PlayerData } = {};
 
+type Message = {
+    playerId: number
+    nickname: string
+    timestamp: Date
+    contents: string
+}
+
 io.on('connection', (socket: Socket) => {
     console.log('a user connected');
 
     socket.on('playerDataUp', (msg: PlayerData) => {
         console.log(msg)
         currentPlayers[msg.id] = {...msg, timestamp: Date.now() }
+    })
+
+    socket.on('messageUp', (msg: Message) => {
+        console.log(msg)
+        io.emit('messageDown', {...msg,
+            timestamp: (new Date().toLocaleTimeString() as string),
+        })
     })
 })
 

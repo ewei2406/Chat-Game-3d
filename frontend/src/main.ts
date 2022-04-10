@@ -10,19 +10,50 @@ import Player from "./Entity/Player"
 import RotationPoint from "./Point/RotationPoint"
 import Connection from "./Service/Connection"
 import PlayerData from "./Entity/PlayerData"
+import Cube from "./Object/Cube"
+import Message from "./Message/MessageType"
+import TextEntity from "./Entity/TextEntity"
+import MakeTree from "./Object/MakeTree"
+import MakeHouse from "./Object/MakeHouse"
+import MakeFlower from "./Object/MakeFlower"
 
 const canvas = new Canvas('display')
 const input = new Input(canvas)
 const camera = new Camera(canvas, -10, -1, -10)
+const origin = new Entity(0, 0, 0)
 
-const pts: Array<Point> = []
-for (let x = -50; x <= 50; x += 10) {
-    for (let y = -50; y <= 50; y += 10) {
-        for (let z = -50; z <= 50; z += 10) {
-            pts.push(new Point(x, y, z))
-        }
+const worldObjs: Array<{ draw: (camera: Camera) => void }> = []
+
+const K = 2 ** 17
+const lcong_randnum = (i: number, num = 1000) => {
+    for (let a = 0; a < (i % 2000); a++) {
+        num = ((num * 24693) + 3517) % K
     }
+    return num / K
 }
+
+for (let i = 0; i < 1000; i += 2) {
+    worldObjs.push(new Point(
+        (lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 1, 'green'))
+}
+
+for (let i = 1000; i < 1100; i += 2) {
+    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 'red'))
+}
+for (let i = 1100; i < 1200; i += 2) {
+    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 'yellow'))
+}
+
+worldObjs.push(...MakeTree(10, 0, 10, 10, 5, 6))
+worldObjs.push(...MakeTree(30, 0, 50, 6, 5, 4))
+worldObjs.push(...MakeTree(30, 0, 50, 6, 5, 3))
+worldObjs.push(...MakeTree(-30, 0, -50, 3, 10, 4))
+// worldObjs.push(...MakeTree(30, 0, -50, 3, 30, 5))
+worldObjs.push(...MakeTree(-10, 0, 10, 1, 4, 4))
+worldObjs.push(...MakeHouse(70, 0, 10, 10, 8, 8, 4))
+worldObjs.push(...MakeHouse(-80, 0, 50, 5, 5, 5, 10))
+worldObjs.push(...MakeHouse(40, 0, -50, 0.5, 5, 5, 5))
+worldObjs.push(...MakeTree(45, 0, -50, 0.5, 5, 5))
 
 
 const connection = new Connection(() => {
@@ -30,17 +61,43 @@ const connection = new Connection(() => {
     const player = new Player(0, 0, 0, 0, 0, 0, connection.id)
     let prev = player.toPlayerData()
     connection.sendPlayerData(player);
-    (document.getElementById('nickname') as HTMLInputElement).value = player.nickname
 
     // nickname
-    const handleNicknameChange = (e: Event) => {
-        player.nickname = (document.getElementById('nickname') as HTMLInputElement).value;
-        console.log("awdawdwadawdawd")
-    }
-
-    
+    (document.getElementById('nickname') as HTMLInputElement).value = player.nickname;
     (document.getElementById('nickname') as HTMLInputElement).onkeyup = (e: KeyboardEvent) => {
         player.nickname = (e.target as HTMLInputElement).value
+    }
+    // FOV
+    (document.getElementById('FOVSlider') as HTMLInputElement).value = camera.f.toString();
+    (document.getElementById('FOVSlider') as HTMLInputElement).oninput = (e: Event) => {
+        camera.f = Number((e.target as HTMLInputElement).value)
+    }
+    // RenderSlider
+    (document.getElementById('renderSlider') as HTMLInputElement).oninput = (e: Event) => {
+        camera.far = Number((e.target as HTMLInputElement).value)
+    }
+    // Reset
+    (document.getElementById('reset') as HTMLButtonElement).onclick = (e: Event) => {
+        camera.f = 256
+        camera.far = 300;
+        (document.getElementById('renderSlider') as HTMLInputElement).value = "200";
+        (document.getElementById('FOVSlider') as HTMLInputElement).value = "256";
+    }
+    // Chat
+    (document.getElementById('sendMessage') as HTMLInputElement).onkeyup = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            const msg = (e.target as HTMLInputElement).value
+            connection.sendMessage(msg, player);
+
+            messageEntities.push(new TextEntity(
+                player.position.getX(),
+                player.position.getY(),
+                player.position.getZ(),
+                msg
+            ));
+
+            (document.getElementById('sendMessage') as HTMLInputElement).value = ""
+        }
     }
 
     // Handle other players
@@ -62,7 +119,6 @@ const connection = new Connection(() => {
         pd.map(playerData => {
             if (playerData.id in otherPlayers) {
                 otherPlayers[playerData.id].updateByData(playerData)
-                otherPlayers[playerData.id].updateAxis()
             } else {
                 otherPlayers[playerData.id] = new Player(
                     playerData.pos[0],
@@ -78,11 +134,32 @@ const connection = new Connection(() => {
         })
     })
 
+    let messages: Message[] = []
+    let messageEntities: TextEntity[] = []
+    connection.onRecieveMessage(msg => {
+        console.log(msg)
+        const sentPlayer = otherPlayers[msg.playerId]
+        console.log(msg.playerId.toString(), otherPlayers)
+        if (sentPlayer) {
+            messageEntities.push(new TextEntity(
+                sentPlayer.position.getX(),
+                sentPlayer.position.getY(),
+                sentPlayer.position.getZ(),
+                msg.contents
+            ))
+        }
+        messages.push(msg);
+        (document.getElementById('chatBox') as HTMLElement).innerHTML = messages.map(m => 
+            `[${m.timestamp.toString().slice(0, 5)}] ${m.nickname} (id:${m.playerId}): ${m.contents}`).join("<br/>");
+    })
+
     let t0 = Date.now()
+    let count = 0
+
     const main = () => {
         // Update
-        player.clearV()
-        player.clearV_R()
+        // player.clearV()
+        // player.clearV_R()
 
         player.updateInput(input)
         player.update()
@@ -90,28 +167,34 @@ const connection = new Connection(() => {
 
         camera.track(player)
         camera.update()
-
-        // Communicate
-        let dt = Date.now() - t0
-        if (dt >= 1000/30) {
-            if (!player.isEqualToData(prev)) connection.sendPlayerData(player)
-            prev = player.toPlayerData()
-            t0 = Date.now()
-        }
+        messageEntities = messageEntities.filter(m => m.update())
 
         // Draw
         canvas.clear()
-        pts.map(p => p.draw(camera))
+
+        worldObjs.map(p => p.draw(camera))
         // origin.drawAxis(camera)
         Object.values(otherPlayers).forEach(k => {
-            k.drawAxis(camera)
+            k.draw(camera)
             k.drawName(camera)
         })
-        // e1.drawAxis(camera)
 
-        // info([camera.toString(), player.toString()])
+        messageEntities.forEach(m => m.draw(camera))
+        console.log(messageEntities.length)
+        origin.drawAxis(camera)
+        // Communicate
+
+        let dt = Date.now() - t0
+        info(['FPS: ' + Math.round(1000 / dt).toString().slice(0, 3)])
+        t0 = Date.now()
+
+        count += dt
+        if (count >= 1000 / 30) {
+            if (!player.isEqualToData(prev)) connection.sendPlayerData(player)
+            prev = player.toPlayerData()
+            count = 0
+        }
     }
-
 
     setInterval(main, 1000 / 60)
 })

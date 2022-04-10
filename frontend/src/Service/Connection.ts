@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 import Player from "../Entity/Player";
 import axios from "axios"
 import PlayerData from "../Entity/PlayerData";
+import Message from "../Message/MessageType";
 
 class Connection {
     socket!: Socket
@@ -27,6 +28,14 @@ class Connection {
 
     onRecievePlayerData(callback: (playerData: PlayerData[]) => any) {
         this.socket.on('playerDataDown', (pd) => callback(pd))
+    }
+
+    sendMessage(message: string, player: Player) {
+        this.socket.emit('messageUp', { playerId: player.id, nickname: player.nickname, contents: message })
+    }
+
+    onRecieveMessage(callback: (message: Message) => any) {
+        this.socket.on('messageDown', (pd) => callback(pd))
     }
 }
 

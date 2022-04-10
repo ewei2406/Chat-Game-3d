@@ -27,8 +27,9 @@ class Canvas {
         this.ctx.fillRect(x - size/2, y - size/2, size, size)
     }
 
-    line(x0: number, y0: number, x1: number, y1: number, color="green") {
+    line(x0: number, y0: number, x1: number, y1: number, color="green", width=1) {
         this.ctx.strokeStyle = color
+        this.ctx.lineWidth = width
         this.ctx.beginPath()
         this.ctx.moveTo(x0, y0)
         this.ctx.lineTo(x1, y1)

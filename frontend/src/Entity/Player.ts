@@ -1,5 +1,8 @@
+import Camera from "../Camera/Camera";
+import Edge from "../Edge/Edge";
 import Input from "../Input/Input";
 import TransformMatrix from "../Matrix/TransformMatrix";
+import Point from "../Point/Point";
 import PositionPoint from "../Point/PositionPoint";
 import RotationPoint from "../Point/RotationPoint";
 import ColumnVector from "../Vector/ColumnVector";
@@ -8,14 +11,42 @@ import PlayerData from "./PlayerData";
 
 class Player extends Entity {
 
+    dispEdges: Edge[]
+
     V: PositionPoint
+    A: PositionPoint
     V_R: RotationPoint
 
     constructor(x: number, y: number, z: number, yaw: number, pitch: number, roll: number, id="-1") {
         super(x, y, z, yaw, pitch, roll, id)
+
+        const K = 2 ** 17
+        const lcong_randnum = (i: number, num = 1000) => {
+            for (let a = 0; a < (i % 1000); a++) {
+                num = ((num * 24693) + 3517) % K
+            }
+            return num / K
+        }
+
+        const color = "#" + Math.round(4000 * lcong_randnum(Number(id))).toString(16).slice(0,4)
+        this.dispEdges = [
+            new Edge(new Point(-2, 0, 0), new Point(2, 0, 0), color, 2),
+            new Edge(new Point(0, -2, 0), new Point(0, 2, 0), color, 2),
+            new Edge(new Point(0, 0, -2), new Point(0, 0, 2), color, 2)
+        ]
+
+
+
         this.V = new PositionPoint(0, 0, 0, 0)
+        this.A = new PositionPoint(0, -0.06, 0, 0)
         this.V_R = new RotationPoint(0, 0, 0, 0)
         this.nickname = `Player ${id}`
+    }
+
+    draw(camera: Camera): void {
+        const t_0 = this.position.getTranslateMatrix(1)
+        const t_1 = this.rotation.getRotationMatrix()
+        this.dispEdges.forEach(edge => edge.transform(t_1).transform(t_0).draw(camera))
     }
 
     moveForward(d: number) {
@@ -47,33 +78,39 @@ class Player extends Entity {
     }
 
     updateInput(input: Input) {
-        if (input.RIGHT) this.moveSide(0.5)
-        if (input.LEFT) this.moveSide(-0.5)
-        if (input.FORWARD) this.moveForward(0.5)
-        if (input.BACKWARD) this.moveForward(-0.5)
-        if (input.UP) this.moveUp(0.5)
-        if (input.DOWN) this.moveUp(-0.5)
+        if (input.RIGHT) this.V.setZ(1)
+        else if (input.LEFT) this.V.setZ(-1)
+        else this.V.setZ(0)
+
+        if (input.FORWARD) this.V.setX(1)
+        else if (input.BACKWARD) this.V.setX(-1)
+        else this.V.setX(0)
+
+        if (input.UP && this.position.getY() === 10) this.V.setY(1.2)
+
+        // else this.moveUp(0)
+        // if (input.DOWN) this.moveUp(-0.5)
 
         // if (input.A_UP) this.rotateVertical(-0.01)
         // if (input.A_DOWN) this.rotateVertical(0.01)
         // if (input.A_RIGHT) this.rotateHorizontal(0.01)
         // if (input.A_LEFT) this.rotateHorizontal(-0.01)
 
-        this.rotateHorizontal(input.MOUSE_X_FRAME / 1000)
-        this.rotateVertical(input.MOUSE_Y_FRAME / 1000)
-    }
+        this.V_R.setPitch(input.MOUSE_X_FRAME / 1000)
+        this.V_R.setRoll(input.MOUSE_Y_FRAME / 1000)
+        this.rotation.add(this.V_R) 
 
-    update(V=this.V, V_R=this.V_R): boolean {
-        if (V.isZero() && V_R.isZero()) return false
-        this.rotation.add(V_R) 
         if (this.rotation.getRoll() > Math.PI / 2) {
             this.rotation.setRoll(Math.PI / 2)
         }
         if (this.rotation.getRoll() < -Math.PI / 2) {
             this.rotation.setRoll(-Math.PI / 2)
         }
+    }
 
-        const dV = V.clone()
+    update(): boolean {
+        const dV = this.V.clone()
+
         const cos_R = Math.cos(this.rotation.getPitch())
         const sin_R = Math.sin(this.rotation.getPitch())
         const dX = dV.getX() * cos_R - dV.getZ() * sin_R
@@ -81,8 +118,13 @@ class Player extends Entity {
         dV.setX(dX)
         dV.setZ(dZ)
         dV.setValue(3, 0)
+
         this.position.add(dV)
-        return true
+        this.V.add(this.A)
+        if (this.position.getY() < 10) {
+            this.position.setY(10)
+        }
+        return this.V.isZero()
     }
 
     toPlayerData(): PlayerData {
