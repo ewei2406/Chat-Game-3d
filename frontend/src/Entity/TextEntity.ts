@@ -7,7 +7,7 @@ class TextEntity extends Entity {
     lifespan: number
 
     constructor(x: number, y: number, z: number, message: string, lifespan=500) {
-        super(x, y + 4, z, 0, 0, 0, "-1")
+        super(x, y + 6, z, 0, 0, 0, "-1")
         this.message = "(" + message + ")"
         this.lifespan = lifespan
     }

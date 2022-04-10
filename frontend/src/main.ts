@@ -18,6 +18,8 @@ import MakeHouse from "./Object/MakeHouse"
 import MakeFlower from "./Object/MakeFlower"
 
 const canvas = new Canvas('display')
+canvas.text(40, 10, "LOADING...", 10)
+info(["LOADING..."])
 const input = new Input(canvas)
 const camera = new Camera(canvas, -10, -1, -10)
 const origin = new Entity(0, 0, 0)
@@ -26,34 +28,39 @@ const worldObjs: Array<{ draw: (camera: Camera) => void }> = []
 
 const K = 2 ** 17
 const lcong_randnum = (i: number, num = 1000) => {
-    for (let a = 0; a < (i % 2000); a++) {
+    for (let a = 0; a < (i % 10000); a++) {
         num = ((num * 24693) + 3517) % K
     }
     return num / K
 }
+worldObjs.push(new Cube(20, 230, 20, 30, 30, 30, 'yellow', 5))
+for (let i = 100; i < 200; i += 10) {
+    worldObjs.push(new Cube((lcong_randnum(i) - 0.5) * 300, 90 + (lcong_randnum(i + 1) - 0.5) * 20, (lcong_randnum(i + 1) - 0.5) * 300, 30, 10, 30, 'white', 2))
+}
 
-for (let i = 0; i < 1000; i += 2) {
+for (let i = 1000; i < 10000; i += 2) {
     worldObjs.push(new Point(
-        (lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 1, 'green'))
+        (lcong_randnum(i) - 0.5) * 200, 0, (lcong_randnum(i + 1) - 0.5) * 200, 1, 'green'))
 }
 
-for (let i = 1000; i < 1100; i += 2) {
-    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 'red'))
+for (let i = 0; i < 100; i += 2) {
+    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 200, 0, (lcong_randnum(i + 1) - 0.5) * 200, 'red'))
 }
-for (let i = 1100; i < 1200; i += 2) {
-    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 300, 0, (lcong_randnum(i + 1) - 0.5) * 300, 'yellow'))
+for (let i = 100; i < 200; i += 2) {
+    worldObjs.push(...MakeFlower((lcong_randnum(i) - 0.5) * 200, 0, (lcong_randnum(i + 1) - 0.5) * 200, 'yellow'))
 }
 
-worldObjs.push(...MakeTree(10, 0, 10, 10, 5, 6))
+worldObjs.push(...MakeTree(10, 0, 10, 8, 5, 5))
 worldObjs.push(...MakeTree(30, 0, 50, 6, 5, 4))
 worldObjs.push(...MakeTree(30, 0, 50, 6, 5, 3))
 worldObjs.push(...MakeTree(-30, 0, -50, 3, 10, 4))
 // worldObjs.push(...MakeTree(30, 0, -50, 3, 30, 5))
 worldObjs.push(...MakeTree(-10, 0, 10, 1, 4, 4))
-worldObjs.push(...MakeHouse(70, 0, 10, 10, 8, 8, 4))
+worldObjs.push(...MakeHouse(60, 0, 10, 7.5, 5, 5, 4))
 worldObjs.push(...MakeHouse(-80, 0, 50, 5, 5, 5, 10))
 worldObjs.push(...MakeHouse(40, 0, -50, 0.5, 5, 5, 5))
 worldObjs.push(...MakeTree(45, 0, -50, 0.5, 5, 5))
+
 
 
 const connection = new Connection(() => {
@@ -80,7 +87,7 @@ const connection = new Connection(() => {
     (document.getElementById('reset') as HTMLButtonElement).onclick = (e: Event) => {
         camera.f = 256
         camera.far = 300;
-        (document.getElementById('renderSlider') as HTMLInputElement).value = "200";
+        (document.getElementById('renderSlider') as HTMLInputElement).value = "300";
         (document.getElementById('FOVSlider') as HTMLInputElement).value = "256";
     }
     // Chat
@@ -150,7 +157,7 @@ const connection = new Connection(() => {
         }
         messages.push(msg);
         (document.getElementById('chatBox') as HTMLElement).innerHTML = messages.map(m => 
-            `[${m.timestamp.toString().slice(0, 5)}] ${m.nickname} (id:${m.playerId}): ${m.contents}`).join("<br/>");
+            `[${m.timestamp.toString()}] ${m.nickname} (id:${m.playerId}): ${m.contents}`).join("<br/>");
     })
 
     let t0 = Date.now()
@@ -185,7 +192,7 @@ const connection = new Connection(() => {
         // Communicate
 
         let dt = Date.now() - t0
-        info(['FPS: ' + Math.round(1000 / dt).toString().slice(0, 3)])
+        info(['FPS: ' + Math.round(1000 / dt).toString().slice(0, 3), 'Players connected: ' + (Object.keys(otherPlayers).length + 1).toString()])
         t0 = Date.now()
 
         count += dt

@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-app.use(express.static('../frontend/dist'))
+app.use(express.static('dist'))
 
 let id = 0
 const generateId = () => {
@@ -32,15 +32,12 @@ type Message = {
 }
 
 io.on('connection', (socket: Socket) => {
-    console.log('a user connected');
 
     socket.on('playerDataUp', (msg: PlayerData) => {
-        console.log(msg)
         currentPlayers[msg.id] = {...msg, timestamp: Date.now() }
     })
 
     socket.on('messageUp', (msg: Message) => {
-        console.log(msg)
         io.emit('messageDown', {...msg,
             timestamp: (new Date().toLocaleTimeString() as string),
         })
@@ -52,7 +49,7 @@ setInterval(() => {
 
     const now = Date.now()
     for (const p in currentPlayers) {
-        if (now - currentPlayers[p].timestamp > 50000) {
+        if (now - currentPlayers[p].timestamp > 100000) {
             delete currentPlayers[p]
         }
     }
@@ -60,7 +57,6 @@ setInterval(() => {
 
 app.get('/generateId', (req: any, res: any ) => {
     const newId = generateId()
-    console.log(newId)
     res.json(newId)
 })
 

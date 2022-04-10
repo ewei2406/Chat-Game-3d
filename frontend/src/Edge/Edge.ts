@@ -35,7 +35,7 @@ class Edge {
     }
 
     transform(t: Matrix) {
-        return new Edge(this.start.transform(t), this.stop.transform(t), this.color)
+        return new Edge(this.start.transform(t), this.stop.transform(t), this.color, this.thickness)
     }
 }
 

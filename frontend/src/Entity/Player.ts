@@ -30,9 +30,9 @@ class Player extends Entity {
 
         const color = "#" + Math.round(4000 * lcong_randnum(Number(id))).toString(16).slice(0,4)
         this.dispEdges = [
-            new Edge(new Point(-2, 0, 0), new Point(2, 0, 0), color, 2),
-            new Edge(new Point(0, -2, 0), new Point(0, 2, 0), color, 2),
-            new Edge(new Point(0, 0, -2), new Point(0, 0, 2), color, 2)
+            new Edge(new Point(-2, 0, 0), new Point(2, 0, 0), color, 1),
+            new Edge(new Point(0, -2, 0), new Point(0, 2, 0), color, 1),
+            new Edge(new Point(0, 0, -2), new Point(0, 0, 2), color, 1)
         ]
 
 

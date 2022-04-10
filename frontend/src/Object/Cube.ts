@@ -10,7 +10,7 @@ class Cube implements WorldObject {
     verticies: PositionPoint[] = []
     edges: Edge[] = []
 
-    constructor(x: number, y: number, z: number, dx=10, dy=10, dz=10, color="black") {
+    constructor(x: number, y: number, z: number, dx=10, dy=10, dz=10, color="black", thickness=0.2) {
         this.position = new PositionPoint(x, y, z)
 
         for(let p_x = x; p_x <= x + dx; p_x += dx) {
@@ -21,21 +21,21 @@ class Cube implements WorldObject {
             }
         }
 
-        this.edges.push(new Edge(new Point(x, y, z), new Point(x + dx, y, z), color))
-        this.edges.push(new Edge(new Point(x, y, z), new Point(x, y, z + dz), color))
-        this.edges.push(new Edge(new Point(x, y, z), new Point(x, y + dy, z), color))
+        this.edges.push(new Edge(new Point(x, y, z), new Point(x + dx, y, z), color, thickness))
+        this.edges.push(new Edge(new Point(x, y, z), new Point(x, y, z + dz), color, thickness))
+        this.edges.push(new Edge(new Point(x, y, z), new Point(x, y + dy, z), color, thickness))
 
-        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x, y + dy, z), color))
-        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x + dx, y + dy, z + dz), color))
-        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x + dx, y, z), color))
+        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x, y + dy, z), color, thickness))
+        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x + dx, y + dy, z + dz), color, thickness))
+        this.edges.push(new Edge(new Point(x + dx, y + dy, z), new Point(x + dx, y, z), color, thickness))
 
-        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x + dx, y, z), color))
-        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x, y, z + dz), color))
-        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x + dx, y + dy, z + dz), color))
+        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x + dx, y, z), color, thickness))
+        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x, y, z + dz), color, thickness))
+        this.edges.push(new Edge(new Point(x + dx, y, z + dz), new Point(x + dx, y + dy, z + dz), color, thickness))
 
-        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x, y + dy, z), color))
-        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x, y, z + dz), color))
-        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x + dx, y + dy, z + dz), color))
+        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x, y + dy, z), color, thickness))
+        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x, y, z + dz), color, thickness))
+        this.edges.push(new Edge(new Point(x, y + dy, z + dz), new Point(x + dx, y + dy, z + dz), color, thickness))
 
     }
 

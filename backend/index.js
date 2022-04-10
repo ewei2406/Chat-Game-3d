@@ -6,7 +6,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-app.use(express.static('../frontend/dist'));
+app.use(express.static('dist'));
 let id = 0;
 const generateId = () => {
     id++;
@@ -14,13 +14,10 @@ const generateId = () => {
 };
 const currentPlayers = {};
 io.on('connection', (socket) => {
-    console.log('a user connected');
     socket.on('playerDataUp', (msg) => {
-        console.log(msg);
         currentPlayers[msg.id] = Object.assign(Object.assign({}, msg), { timestamp: Date.now() });
     });
     socket.on('messageUp', (msg) => {
-        console.log(msg);
         io.emit('messageDown', Object.assign(Object.assign({}, msg), { timestamp: new Date().toLocaleTimeString() }));
     });
 });
@@ -28,14 +25,13 @@ setInterval(() => {
     io.emit('playerDataDown', Object.values(currentPlayers));
     const now = Date.now();
     for (const p in currentPlayers) {
-        if (now - currentPlayers[p].timestamp > 50000) {
+        if (now - currentPlayers[p].timestamp > 100000) {
             delete currentPlayers[p];
         }
     }
 }, 1000 / 30);
 app.get('/generateId', (req, res) => {
     const newId = generateId();
-    console.log(newId);
     res.json(newId);
 });
 const PORT = process.env.PORT || 3001;
